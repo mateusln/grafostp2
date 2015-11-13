@@ -5,6 +5,8 @@
  */
 package javaapplication2;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import sun.rmi.runtime.Log;
 import twitter4j.Status;
@@ -48,6 +50,8 @@ public class JavaApplication2 {
             System.out.println("Showing @" + user + "'s user timeline.");
             for (Status status : statuses) {
                 System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
+                pegaLink(status.getText());
+                
             }
         } catch (TwitterException te) {
             te.printStackTrace();
@@ -55,6 +59,28 @@ public class JavaApplication2 {
             System.exit(-1);
         }
     }
+   
+    public static  void pegaLink(String twit) {
+        
+        ArrayList<String> array = new ArrayList<>();
+        String [] str;
+        
+        String link="vazio";
+        
+        int i=twit.indexOf("http://");
+        int tamanho=twit.split(" ").length;
+        str=new String[tamanho];
+        str=twit.split(" ");
+        //System.out.println(str.length);
+        for (int j = 0; j < tamanho; j++) {
+            if(str[j].contains("http"))
+                link=str[j];
+            //System.out.println(str[j]);
+        }
+        
+        System.out.println(link);
+    }
+    
 }
     
     
