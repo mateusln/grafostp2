@@ -47,6 +47,28 @@ public class JavaApplication2 {
                 user = "Estadao";// digite aqui o usuario desejado
                 statuses = twitter.getUserTimeline(user);
             }
+            long lCursor = -1;
+            //List<Status> st=twitter.getRetweets(lCursor);
+            PagableResponseList<User> lista = twitter.getFriendsList("gritamais_", lCursor);
+            //System.out.println("Showing @" + user + "'s user timeline.");
+            int i=0,pagina=0;
+            
+            do{ // pega seguidores
+                pagina++;
+            
+                do{
+                    String nome =lista.get(i).getName();
+                    i++;
+                    System.out.println("nome= "+nome);
+                }while(i<lista.size());
+            
+            
+                lista = twitter.getFriendsList("gritamais_", lCursor);
+                i=0;
+                System.out.println(lista.size());
+            }while( (lCursor=lista.getNextCursor()) != 0 && pagina<2);
+            
+            
             System.out.println("Showing @" + user + "'s user timeline.");
             for (Status status : statuses) {
                 System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
