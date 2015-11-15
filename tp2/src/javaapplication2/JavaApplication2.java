@@ -5,14 +5,16 @@
  */
 package javaapplication2;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 import sun.rmi.runtime.Log;
+import twitter4j.IDs;
+import twitter4j.PagableResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
+import twitter4j.UserList;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
@@ -36,6 +38,7 @@ public class JavaApplication2 {
         TwitterFactory tf = new TwitterFactory(cb.build());
         Twitter twitter = tf.getInstance();
         
+        
         //Twitter twitter = new TwitterFactory().getInstance();
         try {
             List<Status> statuses;
@@ -45,62 +48,84 @@ public class JavaApplication2 {
                 statuses = twitter.getUserTimeline(user);
             } else {
                 user = "Estadao";// digite aqui o usuario desejado
-                statuses = twitter.getUserTimeline(user);
+                //statuses = twitter.getUserTimeline(user);
             }
             long lCursor = -1;
-            //List<Status> st=twitter.getRetweets(lCursor);
-            PagableResponseList<User> lista = twitter.getFriendsList("gritamais_", lCursor);
-            //System.out.println("Showing @" + user + "'s user timeline.");
-            int i=0,pagina=0;
             
+            IDs ids= twitter.getFollowersIDs("gabspalermo", lCursor);
+           
+            IDs ids2= twitter.getFollowersIDs("_lufontes", lCursor);
+            
+            for (int i = 0; i < ids.getIDs().length; i++) { // busca os amigos em comum
+                for (int j = 0; j < ids2.getIDs().length; j++) {
+                    if(ids.getIDs()[i]==ids2.getIDs()[j]){
+                        long id=ids.getIDs()[i];
+                        User u1 = twitter.showUser(id);
+                        System.out.println(u1.getName()); 
+                        
+                        statuses = twitter.getUserTimeline(u1.getScreenName());
+                        imprimeTL(statuses);
+                    }
+                    
+                }
+            }
+            /*
+            //List<Status> st=twitter.getRetweets(lCursor);
+            PagableResponseList<User> lista = twitter.getFriendsList("gabspalermo", lCursor);
+            
+            int i=0,pagina=0;
+            PagableResponseList<User> lista2 = twitter.getFriendsList("ThiagoS_10", lCursor);
+
+            //lista.contains(lista.get(i));
             do{ // pega seguidores
                 pagina++;
             
                 do{
-                    String nome =lista.get(i).getName();
+                    String nome =lista2.get(i).getName();
                     i++;
                     System.out.println("nome= "+nome);
                 }while(i<lista.size());
             
             
-                lista = twitter.getFriendsList("gritamais_", lCursor);
+                lista2 = twitter.getFriendsList("ThiagoS_10", lCursor);
                 i=0;
                 System.out.println(lista.size());
             }while( (lCursor=lista.getNextCursor()) != 0 && pagina<2);
-            
-            
-            System.out.println("Showing @" + user + "'s user timeline.");
-            for (Status status : statuses) {
-                System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
-                pegaLink(status.getText());
-                
+                 
+            lista.retainAll(lista2) ;
+            System.out.println("INTERCESSAO");
+            System.out.println(lista.size());
+            for (int j = 0; j < lista.size(); j++) {
+                System.out.println(lista.get(i).getName());
             }
+            */
+            
+            /*for (Status status : statuses) { // mostra timeline
+                
+                System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
+            }*/
         } catch (TwitterException te) {
             te.printStackTrace();
             System.out.println("Failed to get timeline: " + te.getMessage());
             System.exit(-1);
         }
     }
-   
-    public static  void pegaLink(String twit) {
+    
+    private static void imprimeTL(List<Status> statuses) {
+        try{
+            
+            
+            for (Status status : statuses) { // mostra timeline
+
+                System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
+            }
         
-        ArrayList<String> array = new ArrayList<>();
-        String [] str;
-        
-        String link="vazio";
-        
-        int i=twit.indexOf("http://");
-        int tamanho=twit.split(" ").length;
-        str=new String[tamanho];
-        str=twit.split(" ");
-        //System.out.println(str.length);
-        for (int j = 0; j < tamanho; j++) {
-            if(str[j].contains("http"))
-                link=str[j];
-            //System.out.println(str[j]);
+        }catch(Exception te){
+            te.printStackTrace();
+            System.out.println("Failed to get timeline: " + te.getMessage());
+            System.exit(-1);
+            
         }
-        
-        System.out.println(link);
     }
     
 }
